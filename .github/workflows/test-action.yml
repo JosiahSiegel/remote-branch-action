@@ -1,0 +1,30 @@
+name: Test Action
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-action:
+    name: Test create branch on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - name: Test action
+        id: test-action
+        uses: ./
+        with:
+          branch: test-action
+          #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get create branch status
+        if: steps.test-action.outputs.create-status != 'false'
+        run: echo ${{ steps.test-action.outputs.create-status }}

@@ -1,0 +1,64 @@
+# action.yml
+name: Remote Branch Action
+description: Create and manage a remote branch
+branding:
+  icon: 'git-branch'
+  color: 'blue'
+inputs:
+  GITHUB_TOKEN:
+    description: GitHub token
+    required: false
+    default: false
+  branch:
+    description: Branch name
+    required: true
+outputs:
+  create-status:
+    description: Branch creation status
+    value: ${{ steps.create-branch.outputs.create_status }}
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Set GITHUB_TOKEN
+      if: inputs.GITHUB_TOKEN != 'false'
+      run: export VAR="${{ inputs.GITHUB_TOKEN }}"
+      shell: bash
+
+    - name: Create branch
+      id: create-branch
+      shell: bash
+      run: |
+        # Assign the arguments to variables
+        branch_name=${{ inputs.branch }}
+        #remote_url=$2
+
+        # Clone the remote repository to a temporary directory
+        #tmp_dir=$(mktemp -d)
+        #git clone $remote_url $tmp_dir
+
+        # Create a new branch locally
+        #cd $tmp_dir
+        git checkout -b $branch_name
+
+        # Push the new branch to the remote repository using the token
+        git push -u origin $branch_name
+
+        # Store the status of the push command
+        status=$?
+
+        # Check if the push was successful
+        if [ $status -eq 0 ]; then
+          # Print a success message
+          echo "Branch $branch_name created and pushed to $remote_url"
+        else
+          # Print an error message
+          echo "Branch creation failed with status $status"
+        fi
+
+        # Delete the temporary directory
+        #cd ..
+        #rm -rf $tmp_dir
+
+        echo "create_status=$status" >> $GITHUB_OUTPUT
