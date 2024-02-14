@@ -50,6 +50,6 @@ jobs:
         if: steps.test-action.outputs.create-status != 'false'
         run: echo ${{ steps.test-action.outputs.create-status }}
   
-      - name: Get create branch status
+      - name: Get create branch status on second repo
         if: steps.test-action-second-repo.outputs.create-status != 'false'
         run: echo ${{ steps.test-action-second-repo.outputs.create-status }}

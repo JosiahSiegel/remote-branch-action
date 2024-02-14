@@ -46,7 +46,7 @@ runs:
           # Check if the push was successful
           if [ $status -eq 0 ]; then
             # Print a success message
-            echo "Branch $branch_name created and pushed to $remote_url"
+            echo "Branch $branch_name created and pushed"
           else
             # Print an error message
             echo "Branch creation failed with status $status"
