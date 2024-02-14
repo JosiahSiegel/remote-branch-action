@@ -18,12 +18,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
 
+      - name: Checkout test repo
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .
+          repository: josiahsiegel/remote-branch-action
+          path: test-repo
+
       - name: Test action
         id: test-action
         uses: ./
         with:
           branch: test-action
-          #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          path: test-repo
 
       - name: Get create branch status
         if: steps.test-action.outputs.create-status != 'false'

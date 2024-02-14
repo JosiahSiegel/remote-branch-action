@@ -5,13 +5,13 @@ branding:
   icon: 'git-branch'
   color: 'blue'
 inputs:
-  GITHUB_TOKEN:
-    description: GitHub token
-    required: false
-    default: false
   branch:
     description: Branch name
     required: true
+  path:
+    description: Relative path under $GITHUB_WORKSPACE to place the repository
+    required: false
+    default: '.'
 outputs:
   create-status:
     description: Branch creation status
@@ -21,35 +21,22 @@ runs:
   using: "composite"
   steps:
 
-    - name: Set GITHUB_TOKEN
-      if: inputs.GITHUB_TOKEN != 'false'
-      run: export VAR="${{ inputs.GITHUB_TOKEN }}"
-      shell: bash
-
     - name: Create branch
       id: create-branch
+      working-directory: ${{ inputs.path }}
       shell: bash
       run: |
         # Assign the arguments to variables
         branch_name=${{ inputs.branch }}
-        #remote_url=$2
-
-        # Clone the remote repository to a temporary directory
-        #tmp_dir=$(mktemp -d)
-        #git clone $remote_url $tmp_dir
 
         # Create a new branch locally
-        #cd $tmp_dir
         git checkout -b $branch_name
 
         # Check if the branch exists on the remote
-        git ls-remote --exit-code --heads origin $branch_name
-
-        # Store the status of the check command
-        check_status=$?
+        check_status=$(git ls-remote --heads origin $branch_name | wc -l)
 
         # Check if the branch does not exist on the remote
-        if [ $check_status -eq 2 ]; then
+        if [ $check_status -eq 0 ]; then
           # Push the new branch to the remote repository using the token
           git push -u origin $branch_name
 
@@ -70,9 +57,5 @@ runs:
           echo "Branch $branch_name already exists"
           status="Branch $branch_name already exists"
         fi
-
-        # Delete the temporary directory
-        #cd ..
-        #rm -rf $tmp_dir
 
         echo "create_status=$status" >> $GITHUB_OUTPUT
