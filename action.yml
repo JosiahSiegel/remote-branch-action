@@ -42,19 +42,33 @@ runs:
         #cd $tmp_dir
         git checkout -b $branch_name
 
-        # Push the new branch to the remote repository using the token
-        git push -u origin $branch_name
+        # Check if the branch exists on the remote
+        git ls-remote --exit-code --heads origin $branch_name
 
-        # Store the status of the push command
-        status=$?
+        # Store the status of the check command
+        check_status=$?
 
-        # Check if the push was successful
-        if [ $status -eq 0 ]; then
-          # Print a success message
-          echo "Branch $branch_name created and pushed to $remote_url"
+        # Check if the branch does not exist on the remote
+        if [ $check_status -eq 2 ]; then
+          # Push the new branch to the remote repository using the token
+          git push -u origin $branch_name
+
+          # Store the status of the push command
+          status=$?
+
+          # Check if the push was successful
+          if [ $status -eq 0 ]; then
+            # Print a success message
+            echo "Branch $branch_name created and pushed to $remote_url"
+          else
+            # Print an error message
+            echo "Branch creation failed with status $status"
+            status="Branch creation failed with status $status"
+          fi
         else
-          # Print an error message
-          echo "Branch creation failed with status $status"
+          # Print a message that the branch already exists on the remote
+          echo "Branch $branch_name already exists"
+          status="Branch $branch_name already exists"
         fi
 
         # Delete the temporary directory
