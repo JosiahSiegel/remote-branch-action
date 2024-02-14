@@ -9,21 +9,54 @@
 
 ## Usage
 
+### Single repo
 ```yml
 jobs:
-  test-action:
-    name: Test create branch on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
+  create-branch-action:
+    name: Create branch
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: Checkout test repo
+      - name: Create branch
+        uses: JosiahSiegel/remote-branch-action@v1.0.0
+        with:
+          branch: new-branch
+```
+### Single alternative repo
+```yml
+jobs:
+  create-branch-action:
+    name: Create branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Checkout alt repo
         uses: actions/checkout@v4
         with:
           sparse-checkout: .
+          repository: me/alt-repo
+          token: ${{ secrets.ALT_REPO_TOKEN }}
+          path: alt-repo
+
+      - name: Create branch on alt repo
+        uses: JosiahSiegel/remote-branch-action@v1.0.0
+        with:
+          branch: new-branch-alt-repo
+          path: alt-repo
+```
+### Multiple repos
+```yml
+jobs:
+  create-branch-action:
+    name: Create branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
       - name: Checkout second repo
         uses: actions/checkout@v4
@@ -33,26 +66,24 @@ jobs:
           token: ${{ secrets.SECONDARY_REPO_TOKEN }}
           path: second-repo
 
-      - name: Test action
-        id: test-action
-        uses: ./
+      - name: Create branch
+        id: create-branch-action
+        uses: JosiahSiegel/remote-branch-action@v1.0.0
         with:
-          branch: test-action
+          branch: new-branch
 
-      - name: Test action on second repo
-        id: test-action-second-repo
-        uses: ./
+      - name: Create branch on second repo
+        id: create-branch-action-second-repo
+        uses: JosiahSiegel/remote-branch-action@v1.0.0
         with:
-          branch: test-action-second-repo
+          branch: new-branch-second-repo
           path: second-repo
 
       - name: Get create branch status
-        if: steps.test-action.outputs.create-status != 'false'
-        run: echo ${{ steps.test-action.outputs.create-status }}
+        run: echo ${{ steps.create-branch-action.outputs.create-status }}
   
       - name: Get create branch status on second repo
-        if: steps.test-action-second-repo.outputs.create-status != 'false'
-        run: echo ${{ steps.test-action-second-repo.outputs.create-status }}
+        run: echo ${{ steps.create-branch-action-second-repo.outputs.create-status }}
 ```
 
 ## Inputs
