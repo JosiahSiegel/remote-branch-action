@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create branch
-        uses: JosiahSiegel/remote-branch-action@v1.0.0
+        uses: JosiahSiegel/remote-branch-action@v1.1.0
         with:
           branch: new-branch
 ```
@@ -43,7 +43,7 @@ jobs:
           path: alt-repo
 
       - name: Create branch on alt repo
-        uses: JosiahSiegel/remote-branch-action@v1.0.0
+        uses: JosiahSiegel/remote-branch-action@v1.1.0
         with:
           branch: new-branch-alt-repo
           path: alt-repo
@@ -68,13 +68,13 @@ jobs:
 
       - name: Create branch
         id: create-branch-action
-        uses: JosiahSiegel/remote-branch-action@v1.0.0
+        uses: JosiahSiegel/remote-branch-action@v1.1.0
         with:
           branch: new-branch
 
       - name: Create branch on second repo
         id: create-branch-action-second-repo
-        uses: JosiahSiegel/remote-branch-action@v1.0.0
+        uses: JosiahSiegel/remote-branch-action@v1.1.0
         with:
           branch: new-branch-second-repo
           path: second-repo
