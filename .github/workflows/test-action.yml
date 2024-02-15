@@ -1,6 +1,8 @@
 name: Test Action
 
 on:
+  schedule:
+    - cron: "*/5 * * * *"
   push:
     branches:
       - main
